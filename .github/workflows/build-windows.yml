@@ -1,17 +1,17 @@
-name: Build Windows Launcher
+name: Build & Release Windows Launcher
 
 on:
-  workflow_dispatch:
   push:
     tags:
-      - 'v*.*.*'
+      - 'v*.*.*'        # À chaque nouveau tag vX.Y.Z
+  workflow_dispatch:    # Ou manuellement
 
 jobs:
-  build-windows:
+  build-and-release:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -19,15 +19,27 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install deps
         run: npm ci
 
-      - name: Build Windows ZIP
-        run: npx electron-builder --win zip --x64
-        # electron-builder détecte automatiquement le bon exécutable sur Windows
+      - name: Build NSIS installer
+        run: npx electron-builder --win nsis --x64
+        # Cette commande produit quelque chose comme dist/MonLauncherSetup-1.2.3.exe
 
-      - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          name: windows-launcher
-          path: dist/*.zip
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload installer to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
