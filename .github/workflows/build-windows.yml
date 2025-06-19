@@ -1,0 +1,35 @@
+name: Build Windows Launcher
+
+on:
+  workflow_dispatch:      # déclenchable manuellement ou via API
+  push:
+    tags:
+      - 'v*.*.*'          # optionnel : build automatiquement sur chaque tag v1.2.3
+
+jobs:
+  build-windows:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'           # ou la version requise
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build with electron-builder
+      run: npx electron-builder --win zip  # zip = archive portable
+      env:
+        CSC_LINK: ''               # pas de signature
+        CSC_KEY_PASSWORD: ''       # si tu signes, renseigne ici
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-launcher
+        path: dist/*.zip           # récupère l’archive ZIP générée
