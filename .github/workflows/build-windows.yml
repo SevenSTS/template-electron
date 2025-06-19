@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -22,14 +22,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Windows ZIP
-        run: npx electron-builder --win zip
+      - name: Build unpacked dir for Windows
+        run: npx electron-builder --win dir --x64 --ia32
         env:
-          CSC_LINK: ''         # si signature, renseigner ici
+          CSC_LINK: ''
           CSC_KEY_PASSWORD: ''
 
-      - name: Upload Windows ZIP artifact
-        uses: actions/upload-artifact@v4   # ← passage à v4
+      - name: Upload unpacked directory as artifact
+        uses: actions/upload-artifact@v4
         with:
           name: windows-launcher
-          path: dist/*.zip
+          path: dist/win-unpacked/**
