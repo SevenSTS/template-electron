@@ -1,0 +1,12 @@
+appId: com.tonlauncher.app
+productName: MonLauncherMinecraft
+directories:
+  buildResources: assets
+win:
+  icon: assets/icon.png
+  target: nsis
+  signAndEditExecutable: false
+  forceCodeSigning: false
+publish: null
+mac: null
+linux: null

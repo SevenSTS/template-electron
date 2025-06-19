@@ -1,0 +1,36 @@
+{
+  "name": "minecraft-launcher",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Seven",
+  "license": "ISC",
+  "keywords": [
+    "minecraft",
+    "launcher",
+    "electron",
+    "nodejs"
+  ],
+  "dependencies": {
+    "minecraft-launcher-core": "^3.18.2"
+  },
+  "devDependencies": {
+    "electron": "^36.5.0",
+    "electron-builder": "^26.0.12",
+    "electron-packager": "^17.1.2"
+  },
+  "build": {
+    "appId": "com.sevenlauncher.app",
+    "productName": "Seven Launcher",
+    "win": {
+      "icon": "assets/icon.png",
+      "target": "nsis"
+    }
+  }
+}
