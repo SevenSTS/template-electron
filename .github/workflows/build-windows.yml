@@ -22,14 +22,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build unpacked dir for Windows
-        run: npx electron-builder --win dir --x64 --ia32
+      - name: Package with electron-packager
+        run: |
+          npx electron-packager . "Seven Launcher" \
+            --platform=win32 \
+            --arch=x64 \
+            --out=release \
+            --overwrite \
+            --app-version=$GITHUB_REF_NAME \
+            --build-version=$GITHUB_REF_NAME
         env:
-          CSC_LINK: ''
-          CSC_KEY_PASSWORD: ''
+          GITHUB_REF_NAME: ${{ github.ref_name }}
 
-      - name: Upload unpacked directory as artifact
+      - name: Upload packaged app as artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-launcher
-          path: dist/win-unpacked/**
+          path: |
+            release/Seven Launcher-win32-x64/**
