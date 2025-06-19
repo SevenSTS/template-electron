@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-windows:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repo
@@ -22,27 +22,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Wine
-        run: |
-          sudo dpkg --add-architecture i386
-          sudo apt-get update
-          sudo apt-get install -y wine64 wine32
+      - name: Build Windows ZIP
+        run: npx electron-builder --win zip --x64
+        # electron-builder détecte automatiquement le bon exécutable sur Windows
 
-      - name: Package Windows app
-        run: |
-          npx electron-packager . "Seven Launcher" \
-            --platform=win32 \
-            --arch=x64 \
-            --out=release \
-            --overwrite \
-            --app-version=${{ github.ref_name }} \
-            --build-version=${{ github.ref_name }} \
-            --icon=assets/icon.ico
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload packaged app as artifact
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-launcher
-          path: release/Seven\ Launcher-win32-x64/**
+          path: dist/*.zip
