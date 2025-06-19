@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -21,13 +22,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Package with electron-packager (no metadata)
+      - name: Install Wine
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y wine64 wine32
+
+      - name: Package Windows app
         run: |
           npx electron-packager . "Seven Launcher" \
             --platform=win32 \
             --arch=x64 \
             --out=release \
-            --overwrite
+            --overwrite \
+            --app-version=${{ github.ref_name }} \
+            --build-version=${{ github.ref_name }} \
+            --icon=assets/icon.ico
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload packaged app as artifact
         uses: actions/upload-artifact@v4
